@@ -1,0 +1,9 @@
+# Claude Code local (machine-specific permission grants)
+.claude/settings.local.json
+
+# OS / editor cruft
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.DS_Store
+*~
