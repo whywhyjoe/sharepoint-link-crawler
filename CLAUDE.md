@@ -5,7 +5,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## What this is
 
 A **SharePoint Online (SPO) Link Crawler** — a client-side tool that runs *inside*
-SharePoint-hosted pages on the BMO tenant (`bmo.sharepoint.com`). It crawls SP
+SharePoint-hosted pages on the [Company] tenant (`[company].sharepoint.com`). It crawls SP
 Classic **and Modern** pages from a start URL, extracts and verifies links
 (including documents), surfaces broken/denied links, and exports results to XLSX.
 
@@ -14,7 +14,7 @@ It bundles **two crawlers** sharing the same page-loading/scope machinery:
 - a **text scanner** (`crawlSiteText`) — crawls the same scope looking for literal
   and regex text patterns, returning snippets with context (separate XLSX export).
 
-Author: Joseph Zapert; FCU Creative & Digital Services (joseph.zapert@bmo.com).
+Author: Joseph Zapert; [Company] Creative & Digital Services (joseph.zapert@[company].com).
 
 ## Project layout
 
@@ -138,10 +138,11 @@ whitespace collapse) so matches survive HTML boundaries, and emits rows with a
 **Note:** there is no committed UI wiring for it in the stale HTML — it's currently
 console-/programmatically-driven.
 
-### Scope/validation rules (important, BMO-specific)
+### Scope/validation rules (important, [Company]-specific)
 URL scope logic lives in `normalizeUrlForCompare`, `getStartUrlScopeInfo`,
 `urlMatchesRequiredPrefix`, and `validateCrawlerUrlConstraints`:
-- **Internal** = `https://bmo.sharepoint.com/sites/{name}/...` or `/teams/{name}/...`.
+- **Internal** = `${SP_TENANT_ORIGIN}/sites/{name}/...` or `/teams/{name}/...` (the
+  tenant origin is configured via the `SP_TENANT_ORIGIN` global in the JS).
   Crawl + destination scope are enforced to stay within that site/team prefix.
 - The tenant root and bare `/sites` / `/teams` are rejected as invalid start URLs.
 - **External** URLs are allowed but **max depth is clamped to 5**.

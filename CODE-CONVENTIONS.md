@@ -1,5 +1,5 @@
 
-# GitHub Copilot/Claude Instructions — JS Coding Standards (FCU / SharePoint Scripts)
+# GitHub Copilot/Claude Instructions — JS Coding Standards ([Company] / SharePoint Scripts)
 
 The following instructions apply to script coding, but explicitly do NOT apply to HTML or CSS.
 
@@ -133,20 +133,21 @@ STANDARD LIBRARIES & INCLUDES
 ==================================================
 
 These are known, supported locations and should be referenced instead of custom bundles when possible.
+(`${spSiteURL}` is the tenant + site root, e.g. `https://[company].sharepoint.com/:u:/r/sites/[SiteName]`.)
 
 Available libraries:
-https://bmo.sharepoint.com/:u:/r/sites/FCUPortal/Code/lib/jquery-3.7.1.min.js
-https://bmo.sharepoint.com/:u:/r/sites/FCUPortal/Code/lib/alpine_cdn.min.js
-https://bmo.sharepoint.com/:u:/r/sites/FCUPortal/Code/lib/pnp2.bundle.js
+${spSiteURL}/Code/lib/jquery-3.7.1.min.js
+${spSiteURL}/Code/lib/alpine_cdn.min.js
+${spSiteURL}/Code/lib/pnp2.bundle.js
 
 
 Optional includes or references (preferred for helpers. They can be referenced OR the relevant helper can be copied into the script. This is to help the coder keep track of helper methodology.):
-https://bmo.sharepoint.com/:u:/r/sites/FCUPortal/Code/standard-include_2.1.html
-https://bmo.sharepoint.com/:u:/r/sites/FCUPortal/Code/standard-script_2.1.js
+${spSiteURL}/Code/standard-include_2.1.html
+${spSiteURL}/Code/standard-script_2.1.js
 ----------
 For review of includes by agents, local locations are:
-'C:\Users\jzapert\BMO Financial Group\FCU Portal - Code\standard-include_2.1.html'
-'C:\Users\jzapert\BMO Financial Group\FCU Portal - Code\standard-script_2.1.js'
+'<local [Company] Portal Code folder>\standard-include_2.1.html'
+'<local [Company] Portal Code folder>\standard-script_2.1.js'
 
 ** NEVER MODIFY THE STANDARD INCLUDE FILES.**
 * IF A MODIFICATION IS CONSIDERED NECESSARY, COPY THE HELPER INTO THE CURRECT WORKING FILE AND COMMENT THE MODIFICATIONS, and NOTIFY THE USER WHEN THE FULL CURRENT TASK IS COMPLETE

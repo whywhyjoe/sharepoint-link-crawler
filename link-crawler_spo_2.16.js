@@ -14,7 +14,7 @@
  *
  * - NEW in 2.16: Sharepoint Modern crawling
  *
- * @author Joseph Zapert; FCU Creative & Digital Services; joseph.zapert@bmo.com
+ * @author Joseph Zapert; [Company] Creative & Digital Services; joseph.zapert@[company].com
  * @created Created: 2026/03/10 12:56:04
  * @lastmodified Last modified: 2026/06/27 18:56:31
  * @version 2.16
@@ -86,6 +86,15 @@ console.log(`[LinkCrawler] v2.16 — Last modified: 2026/06/27 18:56:31
 		lastModifiedBanner: "2026/06/27 18:56:31"
 	});
 
+	// === SharePoint tenant configuration ===============================
+	// Single source of truth for the organization's SharePoint Online
+	// tenant origin. Set this to your tenant, e.g.
+	// "https://contoso.sharepoint.com". Used for internal/external scope
+	// detection and for building the required crawl-scope prefix. The
+	// site/team name is derived dynamically from the entered Start URL, so
+	// only the tenant origin needs to be configured here.
+	const SP_TENANT_ORIGIN = "https://[company].sharepoint.com";
+
 	const CRAWLER_DEFAULTS = {
 		startUrl: "",
 		urlMustStartWith: location.origin,
@@ -95,11 +104,14 @@ console.log(`[LinkCrawler] v2.16 — Last modified: 2026/06/27 18:56:31
 		crawlDelay: 100,
 		verifyConcurrency: 8, // NEW: parallel link checks per page
 		urlMustNotContain: [
-			"_catalogs", "bmo-my", "spcommon.png", "siteicon.png",
+			"_catalogs", "[company]-my", "spcommon.png", "siteicon.png",
 		],
-		destUrlExclusion: ["mailto:", ".ashx", "javascript:", "bmo-my", "/FR/"],
+		destUrlExclusion: ["mailto:", ".ashx", "javascript:", "[company]-my", "/FR/"],
+		// NOTE: the leading IDs (#companyCentralFooter, #companyPortals,
+		// #company-ribbonRow) are tenant-specific chrome selectors —
+		// customize them to match your SharePoint master page / branding.
 		headerFooterSelectors: [
-			"#DeltaPlaceHolderLeftNavBar, #bmocentralfooter, #bmocPortals, #desktop-bluebar, #desktop-darkbluebar, #BMO-ribbonRow, #titleRow, #CommentsWrapper, #spCommandBar, #SuiteNavWrapper, #sp-appBar, [data-automationid='SiteHeader'], [id*='RecommendedItemsWebPart']",
+			"#DeltaPlaceHolderLeftNavBar, #companyCentralFooter, #companyPortals, #desktop-bluebar, #desktop-darkbluebar, #company-ribbonRow, #titleRow, #CommentsWrapper, #spCommandBar, #SuiteNavWrapper, #sp-appBar, [data-automationid='SiteHeader'], [id*='RecommendedItemsWebPart']",
 		],
 		navSelectors: ["#desktop-whitebar", ".ms-Nav"],
 		documentExtensions: ["pdf", "docx", "xlsx", "pptx", "mp4"],
@@ -178,17 +190,17 @@ console.log(`[LinkCrawler] v2.16 — Last modified: 2026/06/27 18:56:31
 
 	/**
 	 * Determine whether a start URL is:
-	 * - invalid root-level BMO SharePoint URL
-	 * - internal BMO site/team URL
+	 * - invalid root-level [Company] SharePoint URL
+	 * - internal [Company] site/team URL
 	 * - external URL
 	 *
-	 * Internal means:
-	 *   https://bmo.sharepoint.com/sites/{siteName}/...
-	 *   https://bmo.sharepoint.com/teams/{teamName}/...
+	 * Internal means (SP_TENANT_ORIGIN is the configured tenant origin):
+	 *   ${SP_TENANT_ORIGIN}/sites/{siteName}/...
+	 *   ${SP_TENANT_ORIGIN}/teams/{teamName}/...
 	 *
 	 * Required prefix becomes:
-	 *   https://bmo.sharepoint.com/sites/{siteName}
-	 *   https://bmo.sharepoint.com/teams/{teamName}
+	 *   ${SP_TENANT_ORIGIN}/sites/{siteName}
+	 *   ${SP_TENANT_ORIGIN}/teams/{teamName}
 	 *
 	 * @param {string} rawStartUrl
 	 * @returns {{
@@ -213,12 +225,12 @@ console.log(`[LinkCrawler] v2.16 — Last modified: 2026/06/27 18:56:31
 			};
 		}
 
-		const isBmoSp = info.origin === "https://bmo.sharepoint.com";
+		const isTenantSp = info.origin === SP_TENANT_ORIGIN;
 		const path = info.pathname;
 
 		// Explicitly invalid root/start URLs
 		if (
-			isBmoSp &&
+			isTenantSp &&
 			(path === "/" || path === "/sites" || path === "/teams")
 		) {
 			return {
@@ -233,10 +245,10 @@ console.log(`[LinkCrawler] v2.16 — Last modified: 2026/06/27 18:56:31
 
 		// Internal site/team root detection
 		const internalMatch = path.match(/^\/(sites|teams)\/([^\/]+)/i);
-		if (isBmoSp && internalMatch) {
+		if (isTenantSp && internalMatch) {
 			const managedPath = internalMatch[1].toLowerCase();
 			const siteName = internalMatch[2];
-			const requiredPrefix = `https://bmo.sharepoint.com/${managedPath}/${siteName}`;
+			const requiredPrefix = `${SP_TENANT_ORIGIN}/${managedPath}/${siteName}`;
 
 			return {
 				valid: true,
@@ -404,7 +416,7 @@ console.log(`[LinkCrawler] v2.16 — Last modified: 2026/06/27 18:56:31
 			return false;
 		}
 
-		// Invalid BMO root URLs: disable start
+		// Invalid [Company] root URLs: disable start
 		if (scope.isInvalidRoot) {
 			showFieldWarning("startUrlWarning", scope.message);
 			setStartButtonDisabled(true);

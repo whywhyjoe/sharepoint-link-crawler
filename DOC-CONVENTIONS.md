@@ -1,4 +1,4 @@
-# GitHub Copilot/Claude Instructions — JS Commenting Standards (FCU / SharePoint Scripts)
+# GitHub Copilot/Claude Instructions — JS Commenting Standards ([Company] / SharePoint Scripts)
 
 ## Purpose
 Ensure all JavaScript generated or modified by GitHub Copilot follows a **consistent, enterprise-grade documentation standard** aligned to our SharePoint custom script patterns.
