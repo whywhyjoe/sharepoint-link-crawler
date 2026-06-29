@@ -147,7 +147,21 @@ URL scope logic lives in `normalizeUrlForCompare`, `getStartUrlScopeInfo`,
 - The tenant root and bare `/sites` / `/teams` are rejected as invalid start URLs.
 - **External** URLs are allowed but **max depth is clamped to 5**.
 - Prefix matching is path-boundary-safe (`/foo` must not match `/foobar`) — preserve
-  this when touching scope code.
+  this when touching scope code. A **root-only scope (`/`) matches everything on the
+  same origin**; `hrefStartsWithScope` / `urlMatchesRequiredPrefix` special-case it
+  (otherwise the boundary check degenerates to `startsWith("//")` and rejects every
+  non-root path — which silently produced **zero result rows** when `destMustStartWith`
+  was a bare tenant root).
+
+> ⚠️ **The `[company]` strings are placeholders, kept generic on purpose — this is a
+> public repo.** `SP_TENANT_ORIGIN` (`"https://[company].sharepoint.com"`) and the
+> `[company]-my` entries in `urlMustNotContain` / `destUrlExclusion` are NOT real
+> values; **do not commit a real tenant origin.** When testing locally you must set
+> `SP_TENANT_ORIGIN` to your actual tenant (e.g. `https://contoso.sharepoint.com`) —
+> otherwise `getStartUrlScopeInfo` compares against the placeholder, your tenant URL is
+> misclassified as **external** (depth clamped to 5, internal scope auto-fill skipped),
+> and scope behavior is wrong. The live UI typically overrides the `[company]-my`
+> exclusion defaults, but the global has no UI override — it must be edited in the JS.
 
 ## Conventions to follow when editing
 

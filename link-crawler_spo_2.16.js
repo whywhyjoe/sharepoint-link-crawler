@@ -292,6 +292,11 @@ console.log(`[LinkCrawler] v2.16 — Last modified: 2026/06/27 18:56:31
 		if (!candidate.valid || !required.valid) return false;
 		if (candidate.origin !== required.origin) return false;
 
+		// Root-only scope ("/") matches everything on the same origin. Without
+		// this, the boundary check below would test startsWith("//") and reject
+		// every non-root path (e.g. a bare-tenant destMustStartWith dropped all rows).
+		if (required.pathname === "/") return true;
+
 		return (
 			candidate.pathname === required.pathname ||
 			candidate.pathname.startsWith(required.pathname + "/")
@@ -490,6 +495,11 @@ console.log(`[LinkCrawler] v2.16 — Last modified: 2026/06/27 18:56:31
 
 		if (!candidate.valid || !required.valid) return false;
 		if (candidate.origin !== required.origin) return false;
+
+		// Root-only scope ("/") matches everything on the same origin. Without
+		// this, the boundary check below would test startsWith("//") and reject
+		// every non-root path.
+		if (required.pathname === "/") return true;
 
 		return (
 			candidate.pathname === required.pathname ||
